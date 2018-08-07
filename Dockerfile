@@ -1,8 +1,16 @@
 FROM dockcross/windows-x64-posix:latest
 
+# docker run -it dockcross/windows-x64-posix:latest /bin/bash
+
 RUN mkdir -p /opt
 WORKDIR /opt
 
+RUN cd /usr/src/mxe &&  \
+    make TARGET=x86_64-w64-mingw32.static.posix bzip2 && \
+    make TARGET=x86_64-w64-mingw32.static.posix boost
+RUN find /usr/src/mxe/usr/x86_64-w64-mingw32.static.posix -name *boost*
+
+# http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz
 # BOOST 1.60 with Boost geometry extensions
 # SSC : system thread random chrono
 # XDYN : program_options filesystem system regex
