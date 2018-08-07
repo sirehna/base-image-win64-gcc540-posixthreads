@@ -1,0 +1,28 @@
+# Encrypted key doc
+#   https://docs.travis-ci.com/user/encryption-keys
+#
+# Encrypted key commands
+#   gem install travis
+#   travis pubkey
+#   travis encrypt DOCKER_PASSWORD=*********** --add
+sudo: required
+services:
+- docker
+env:
+  global:
+  - DOCKER_USERNAME=gjacquenot
+  - secure: UmSSx/awck8Qlx4CxfQ3Q6kEG2fj3rUtaogYvj5BivKXPESLxIAwoGjTQPkRtCaHySDFhcR0Fn1EhBDG0pTZ9BFRjPaVtCpstYFL1vLe/Gq5zgXHH1MaAp03KBGPUVUKpY7JNE1agjw1lGP7t2LAnBq2xCcd375SRKp3aMNXonYfLM62ine/9nzBLppt1HWTyDhgaeMpXHGEEcC3FTiLJt6/2/So73REe2jHoEuvPphTU80zh5MAXzi/FXtkfQEmQWoKlGsPaeAA8Z81lE4RjHKsCFZjRPefEHYjFrSisfLmJU7ITTIEyjAbshxwV42zWKhDrMm+MYw4G9qwIqAaxqPThBkBYHnMggztH+Rkgw5vsWQ7G36EyKI0G6APLysPUqIq9ShlhkmfWzPZmBg1bq+fU+BcYbjup06waLQtFMegjXx8Urrr272AoL0C81SBFcOU/uKK7M6T94QFdUBf409Ymwvf/Q1NtHs3sfw3KD2axN8f8gdnJw2J7SPU5SuanMo7WzgdoZrdpsQJ5qeHAw3nIdA0/um9NW3nWP5QpL8P8HMsnCXBFc0NVbzkrZl506/vjG2lIF8NzCy/EH2dU9CUMWHNvihi59ABaRoxbYJMxiQZCpU4noOTqZGVgPUkGHHDgHamRvfbZqOAm1ciG87ZPQzJJ9BnPbMZQ+POwyo=
+before_install:
+- echo "Before install"
+before_script:
+- docker pull gjacquenot/ssc_build_win64 || true
+script:
+- docker build --pull --cache-from gjacquenot/ssc_build_win64 --tag gjacquenot/ssc_build_win64
+  .
+after_script:
+- docker images
+after_success:
+- if [[ "$TRAVIS_BRANCH" == "master" ]]; then docker login -u $DOCKER_USERNAME -p
+  $DOCKER_PASSWORD ; docker push gjacquenot/ssc_build_win64 ; fi
+notifications:
+  email: true
