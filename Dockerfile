@@ -17,11 +17,11 @@ RUN git clone https://github.com/boostorg/geometry && \
     cd .. && \
     rm -rf geometry
 
-# Ipopt
+# Ipopt 3.12.9
 # http://www.coin-or.org/Ipopt/documentation/node10.html
-ENV IPOPT_VERSION=3.12.9
-RUN gfortran --version && \
-    wget http://www.coin-or.org/download/source/Ipopt/Ipopt-$IPOPT_VERSION.tgz -O ipopt_src.tgz && \
+# Command 'make test' is disabled : wine has to be used to run tests
+RUN wget http://www.coin-or.org/download/source/Ipopt/Ipopt-3.12.9.tgz -O ipopt_src.tgz && \
+    mkdir -p /opt/CoinIpopt && \
     mkdir -p ipopt_src && \
     tar -xf ipopt_src.tgz --strip 1 -C ipopt_src && \
     rm -rf ipopt_src.tgz && \
@@ -35,9 +35,16 @@ RUN gfortran --version && \
     cd ../../ && \
     mkdir build && \
     cd build && \
-    ../configure -with-pic --disable-shared --prefix=/opt/CoinIpopt && \
+    CC=/usr/src/mxe/usr/bin/x86_64-w64-mingw32.static.posix-gcc \
+    CXX=/usr/src/mxe/usr/bin/x86_64-w64-mingw32.static.posix-g++ \
+    F77=/usr/src/mxe/usr/bin/x86_64-w64-mingw32.static.posix-gfortran \
+    ../configure \
+        -with-pic \
+        --disable-shared \
+        --prefix=/opt/CoinIpopt \
+        --host=x86_64-w64-mingw32 \
+        && \
     make && \
-    make test && \
     make install && \
     cd .. && \
     cd .. && \
