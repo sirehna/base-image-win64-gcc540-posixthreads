@@ -7,7 +7,8 @@ WORKDIR /opt
 
 # BOOST
 RUN cd /usr/src/mxe &&  \
-    make TARGET=x86_64-w64-mingw32.static.posix boost
+    make TARGET=x86_64-w64-mingw32.static.posix boost && \
+    rm -rf /usr/src/mxe/pkg/*
 
 # BOOST Geometry extension
 RUN git clone https://github.com/boostorg/geometry && \
