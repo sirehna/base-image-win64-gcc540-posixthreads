@@ -5,65 +5,15 @@ FROM dockcross/windows-x64-posix:latest
 RUN mkdir -p /opt
 WORKDIR /opt
 
+# BOOST
 RUN cd /usr/src/mxe &&  \
-    make TARGET=x86_64-w64-mingw32.static.posix bzip2 && \
     make TARGET=x86_64-w64-mingw32.static.posix boost
-RUN find /usr/src/mxe/usr/x86_64-w64-mingw32.static.posix -name *boost*
-
-# http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz
-# BOOST 1.60 with Boost geometry extensions
-# SSC : system thread random chrono
-# XDYN : program_options filesystem system regex
-# libbz2 is required for Boost compilation
-# cross-build, see b2 options at:
-# https://www.boost.org/build/doc/html/bbv2/overview/invocation.html
-# https://github.com/mxe/mxe/blob/master/src/boost.mk
-RUN wget http://sourceforge.net/projects/boost/files/boost/1.60.0/boost_1_60_0.tar.gz -O boost_src.tar.gz && \
-    mkdir -p boost_src && \
-    tar -xzf boost_src.tar.gz --strip 1 -C boost_src && \
-    rm -rf boost_src.tar.gz && \
-    cd boost_src && \
-    export TARGET=x86_64-w64-mingw32.static.posix && \
-    export PREFIX=/usr/src/mxe/usr && \
-    echo "using gcc : mxe : ${TARGET}-g++ : <rc>${TARGET}-windres <archiver>${TARGET}-ar <ranlib>${TARGET}-ranlib ;" > user-config.jam &&  \
-    cat user-config.jam &&  \
-    ./bootstrap.sh && \
-    ./b2 \
-        -a \
-        -q \
-        --ignore-site-config \
-        --user-config=user-config.jam \
-        abi=ms \
-        address-model=64 \
-        architecture=x86 \
-        binary-format=pe \
-        link=static \
-        target-os=windows \
-        threadapi=win32 \
-        threading=single \
-        threading=multi \
-        variant=release \
-        toolset=gcc-mxe \
-        cxxflags=-std=gnu++11 \
-        --layout=tagged \
-        --disable-icu \
-        --without-mpi \
-        --without-python \
-        --prefix=${PREFIX}/${TARGET} \
-        --exec-prefix=${PREFIX}/${TARGET}/bin \
-        --libdir=${PREFIX}/${TARGET}/lib \
-        --includedir=${PREFIX}/${TARGET}/include \
-        -sEXPAT_INCLUDE=${PREFIX}/${TARGET}/include \
-        -sEXPAT_LIBPATH=${PREFIX}/${TARGET}/lib \
-        install && \
-    cd .. && \
-    rm -rf boost_src
 
 # BOOST Geometry extension
 RUN git clone https://github.com/boostorg/geometry && \
     cd geometry && \
     git checkout 4aa61e59a72b44fb3c7761066d478479d2dd63a0 && \
-    cp -rf include/boost/geometry/extensions /opt/boost/include/boost/geometry/. && \
+    cp -rf include/boost/geometry/extensions /usr/src/mxe/usr/x86_64-w64-mingw32.static.posix/include/boost/geometry/. && \
     cd .. && \
     rm -rf geometry
 
@@ -123,3 +73,57 @@ RUN wget https://sourceforge.net/projects/geographiclib/files/distrib/archive/Ge
     mkdir -p /opt/geographiclib && \
     tar -xzf geographiclib.tgz --strip 1 -C /opt/geographiclib && \
     rm -rf geographiclib.tgz
+
+## Manual installation of boost. Require first to install lib bzip2.
+## http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz
+## Moreover mxe seems to patch boost ...
+## https://github.com/mxe/mxe/blob/master/src/boost.mk
+## https://github.com/mxe/mxe/blob/master/src/boost-1-fixes.patch
+##
+## BOOST 1.60 with Boost geometry extensions
+## SSC : system thread random chrono
+## XDYN : program_options filesystem system regex
+## libbz2 is required for Boost compilation
+## cross-build, see b2 options at:
+## https://www.boost.org/build/doc/html/bbv2/overview/invocation.html
+## https://github.com/mxe/mxe/blob/master/src/boost.mk
+#RUN wget http://sourceforge.net/projects/boost/files/boost/1.60.0/boost_1_60_0.tar.gz -O #boost_src.tar.gz && \
+#    mkdir -p boost_src && \
+#    tar -xzf boost_src.tar.gz --strip 1 -C boost_src && \
+#    rm -rf boost_src.tar.gz && \
+#    cd boost_src && \
+#    export TARGET=x86_64-w64-mingw32.static.posix && \
+#    export PREFIX=/usr/src/mxe/usr && \
+#    echo "using gcc : mxe : ${TARGET}-g++ : <rc>${TARGET}-windres <archiver>${TARGET}-ar <ranlib>$#{TARGET}-ranlib ;" > user-config.jam &&  \
+#    cat user-config.jam &&  \
+#    ./bootstrap.sh && \
+#    ./b2 \
+#        -a \
+#        -q \
+#        --ignore-site-config \
+#        --user-config=user-config.jam \
+#        abi=ms \
+#        address-model=64 \
+#        architecture=x86 \
+#        binary-format=pe \
+#        link=static \
+#        target-os=windows \
+#        threadapi=win32 \
+#        threading=single \
+#        threading=multi \
+#        variant=release \
+#        toolset=gcc-mxe \
+#        cxxflags=-std=gnu++11 \
+#        --layout=tagged \
+#        --disable-icu \
+#        --without-mpi \
+#        --without-python \
+#        --prefix=${PREFIX}/${TARGET} \
+#        --exec-prefix=${PREFIX}/${TARGET}/bin \
+#        --libdir=${PREFIX}/${TARGET}/lib \
+#        --includedir=${PREFIX}/${TARGET}/include \
+#        -sEXPAT_INCLUDE=${PREFIX}/${TARGET}/include \
+#        -sEXPAT_LIBPATH=${PREFIX}/${TARGET}/lib \
+#        install && \
+#    cd .. && \
+#    rm -rf boost_src
