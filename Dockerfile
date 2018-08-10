@@ -42,6 +42,7 @@ RUN wget http://www.coin-or.org/download/source/Ipopt/Ipopt-3.12.9.tgz -O ipopt_
     ../configure \
         -with-pic \
         --disable-shared \
+        --disable-pthread-mumps \
         --prefix=/opt/CoinIpopt \
         --host=x86_64-w64-mingw32 \
         && \
