@@ -15,14 +15,13 @@ env:
 before_install:
 - echo "Before install"
 before_script:
-- docker pull gjacquenot/ssc_build_win64 || true
+- docker pull gjacquenot/ssc_build_win64_posix || true
 script:
-- docker build --pull --cache-from gjacquenot/ssc_build_win64 --tag gjacquenot/ssc_build_win64
-  .
+- docker build --pull --cache-from gjacquenot/ssc_build_win64_posix --tag gjacquenot/ssc_build_win64_posix .
 after_script:
 - docker images
 after_success:
 - if [[ "$TRAVIS_BRANCH" == "master" ]]; then docker login -u $DOCKER_USERNAME -p
-  $DOCKER_PASSWORD ; docker push gjacquenot/ssc_build_win64 ; fi
+  $DOCKER_PASSWORD ; docker push gjacquenot/ssc_build_win64_posix ; fi
 notifications:
   email: true
