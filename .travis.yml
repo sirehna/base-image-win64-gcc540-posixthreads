@@ -11,17 +11,22 @@ services:
 env:
   global:
   - DOCKER_USERNAME=gjacquenot
-  - secure: UmSSx/awck8Qlx4CxfQ3Q6kEG2fj3rUtaogYvj5BivKXPESLxIAwoGjTQPkRtCaHySDFhcR0Fn1EhBDG0pTZ9BFRjPaVtCpstYFL1vLe/Gq5zgXHH1MaAp03KBGPUVUKpY7JNE1agjw1lGP7t2LAnBq2xCcd375SRKp3aMNXonYfLM62ine/9nzBLppt1HWTyDhgaeMpXHGEEcC3FTiLJt6/2/So73REe2jHoEuvPphTU80zh5MAXzi/FXtkfQEmQWoKlGsPaeAA8Z81lE4RjHKsCFZjRPefEHYjFrSisfLmJU7ITTIEyjAbshxwV42zWKhDrMm+MYw4G9qwIqAaxqPThBkBYHnMggztH+Rkgw5vsWQ7G36EyKI0G6APLysPUqIq9ShlhkmfWzPZmBg1bq+fU+BcYbjup06waLQtFMegjXx8Urrr272AoL0C81SBFcOU/uKK7M6T94QFdUBf409Ymwvf/Q1NtHs3sfw3KD2axN8f8gdnJw2J7SPU5SuanMo7WzgdoZrdpsQJ5qeHAw3nIdA0/um9NW3nWP5QpL8P8HMsnCXBFc0NVbzkrZl506/vjG2lIF8NzCy/EH2dU9CUMWHNvihi59ABaRoxbYJMxiQZCpU4noOTqZGVgPUkGHHDgHamRvfbZqOAm1ciG87ZPQzJJ9BnPbMZQ+POwyo=
+  - secure: "W3IhztPcJfZpxBCrnZIAzTS5fR64C67Rhbu/kB86zKq+FbPHizUVlAX4bAgRNQsbPYoc/ZX6lFJ7r87ofpSbLiXUwgZRQZVy/PbU1IzTdVMfFz+twgRfrnQJP7hn5yGPetA2NZHRxmV789EaOnRaczOj5uAe8oHYERcWBY+2IlpdW1V4tVXBdlA9xR2sVriTXeYaMYFmS44magWtpCnFyL7H7pgNNkJPxc0Z8IBvAgFlYSy4XbeWlc7S+xfgv7SliF1mNioBzzaseGtnuQ7BqRzi/eKAHh48XFDtPKlib5YWgAGi4a8RnxQLzVjmsmeH2L9Aoai7MS7+vLYpm2a5Hml4CJz5farY176e4YSezntdCTBWj5K8pZuhmWChKBjJbW82j12QBD6sM/y/xZrWlhRjKc7C0ShiKCRNkCfBKsYhLSTpgf7VZFAZyXqSg44sXyBkSF/aEZqTVTbJtP7GbghYlutndp+0O6b85qsuzNCaGJMxj7Sf5JdqpfqeAHn66Kb/9bWyxmKxr60JSAt0d+ACG1Wf6nz1T2rOmHss8ZsLOYkftTBJbzVVJY5nEbupbSlN+AndJr35FmT8czrm24Zjz5KS1m8kPMG0pTpjfyrojjuEHfPIRLPimaBoKi/sBmJp70GMkgckujOnE3n2kY6ph6Fn+tw7J1S2imHM/Hs="
+
 before_install:
 - echo "Before install"
 before_script:
-- docker pull gjacquenot/ssc_build_win64_posix || true
+- docker pull sirehna/base-image-win64-gcc540-posixthreads || true
 script:
-- docker build --pull --cache-from gjacquenot/ssc_build_win64_posix --tag gjacquenot/ssc_build_win64_posix .
+- docker build --pull --cache-from sirehna/base-image-win64-gcc540-posixthreads --tag sirehna/base-image-win64-gcc540-posixthreads .
 after_script:
 - docker images
 after_success:
-- if [[ "$TRAVIS_BRANCH" == "master" ]]; then docker login -u $DOCKER_USERNAME -p
-  $DOCKER_PASSWORD ; docker push gjacquenot/ssc_build_win64_posix ; fi
+- if [[ "$TRAVIS_BRANCH" == "master" ]];
+  then
+  docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD ;
+  docker push sirehna/base-image-win64-gcc540-posixthreads ;
+  fi
 notifications:
   email: true
+
