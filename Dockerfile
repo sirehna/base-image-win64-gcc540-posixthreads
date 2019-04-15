@@ -1,4 +1,4 @@
-FROM dockcross/windows-x64-posix:latest
+FROM dockcross/windows-static-x64-posix:latest
 
 # docker run -it dockcross/windows-x64-posix:latest /bin/bash
 
